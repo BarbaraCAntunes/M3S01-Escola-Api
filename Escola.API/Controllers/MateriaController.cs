@@ -102,6 +102,48 @@ namespace Escola.API.Controllers
             return materia;
         }
 
+        // PUT: api/materias/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutMateria(int id, MateriaDTO materiaDTO)
+        {
+            if (id != materiaDTO.Id)
+            {
+                return BadRequest();
+            }
+            var materia = await _context.Materias.FindAsync(id);
+
+            if (materia == null)
+            {
+                return NotFound();
+            }
+
+            materia.Nome = materiaDTO.Nome;
+
+            _context.Entry(materia).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!MateriaExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+
+        }
+        private bool MateriaExists(int id)
+        {
+            return _context.Materias.Any(e => e.Id == id);
+        }
     }
 }
 
