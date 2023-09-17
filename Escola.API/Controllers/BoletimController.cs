@@ -108,7 +108,28 @@ namespace Escola.API.Controllers
         {
             return _context.Boletins.Any(e => e.Id == id);
         }
+
+        // DELETE: api/boletins/5
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Boletim>> DeleteBoletim(int id)
+        {
+            var boletim = await _context.Boletins.FindAsync(id);
+
+            if (boletim == null)
+            {
+                return NotFound();
+            }
+
+            var notasMaterias = await _context.NotasMaterias.Where(n => n.BoletimId == id).ToListAsync();
+            foreach (var notaMateria in notasMaterias)
+            {
+                _context.NotasMaterias.Remove(notaMateria);
+            }
+
+            _context.Boletins.Remove(boletim);
+            await _context.SaveChangesAsync();
+
+            return boletim;
+        }
     }
 }
-
-
