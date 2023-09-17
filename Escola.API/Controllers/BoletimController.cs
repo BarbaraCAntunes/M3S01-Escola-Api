@@ -65,6 +65,50 @@ namespace Escola.API.Controllers
 
             return CreatedAtAction(nameof(GetBoletim), new { id = boletim.Id }, boletim);
         }
-    }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutBoletim(int id, BoletimDTO boletimDTO)
+        {
+            if (id != boletimDTO.Id)
+            {
+                return BadRequest("O ID no corpo da solicitação não coincide com o ID na URL."); // Retorna 400 Bad Request se o ID não coincidir
+            }
+
+            var boletim = await _context.Boletins.FindAsync(id);
+
+            if (boletim == null)
+            {
+                return NotFound();
+            }
+
+            boletim.AlunoId = boletimDTO.AlunoId;
+
+            _context.Entry(boletim).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!BoletimExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        private bool BoletimExists(int id)
+        {
+            return _context.Boletins.Any(e => e.Id == id);
+        }
+    }
 }
+
+
