@@ -78,6 +78,30 @@ namespace Escola.API.Controllers
 
             return CreatedAtAction(nameof(GetMateria), new { id = materia.Id }, materia);
         }
+
+        // DELETE: api/materias/5
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Materia>> DeleteMateria(int id)
+        {
+            var materia = await _context.Materias.FindAsync(id);
+
+            if (materia == null)
+            {
+                return NotFound();
+            }
+
+            var notasMaterias = await _context.NotasMaterias.Where(n => n.MateriaId == id).ToListAsync();
+            foreach (var notaMateria in notasMaterias)
+            {
+                _context.NotasMaterias.Remove(notaMateria);
+            }
+
+            _context.Materias.Remove(materia);
+            await _context.SaveChangesAsync();
+
+            return materia;
+        }
+
     }
 }
 
