@@ -1,4 +1,6 @@
-﻿namespace Escola.API.Model
+﻿using System.Collections.Generic;
+
+namespace Escola.API.Model
 {
     public class Boletim
     {
