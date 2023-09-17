@@ -1,7 +1,9 @@
 ﻿using Escola.API.DataBase;
+using Escola.API.DTO;
 using Escola.API.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -53,6 +55,28 @@ namespace Escola.API.Controllers
             }
 
             return materias;
+        }
+
+        // POST: api/materias
+        [HttpPost]
+        public async Task<ActionResult<Materia>> PostMateria(MateriaDTO materiaDTO)
+        {
+            var existingMateria = await _context.Materias.FirstOrDefaultAsync(m => m.Nome.Equals(materiaDTO.Nome, StringComparison.OrdinalIgnoreCase));
+
+            if (existingMateria != null)
+            {
+                return Conflict("A matéria já existe.");
+            }
+
+            var materia = new Materia
+            {
+                Nome = materiaDTO.Nome,
+            };
+
+            _context.Materias.Add(materia);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetMateria), new { id = materia.Id }, materia);
         }
     }
 }
