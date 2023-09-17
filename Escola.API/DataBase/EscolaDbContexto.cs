@@ -8,6 +8,9 @@ namespace Escola.API.DataBase
         public virtual DbSet<Aluno> Alunos { get; set; }
 
         public virtual DbSet<Turma> Turmas { get; set; }
+        public virtual DbSet<Materia> Materias { get; set; }
+        public virtual DbSet<Boletim> Boletins { get; set; }
+        public virtual DbSet<NotasMateria> NotasMaterias { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -103,7 +106,7 @@ namespace Escola.API.DataBase
             modelBuilder.Entity<Boletim>().HasOne(x => x.Aluno)
                                             .WithMany()
                                             .HasForeignKey(x => x.AlunoId)
-                                            .OnDelete(DeleteBehavior.Cascade); // Define a ação de exclusão em cascata
+                                            .OnDelete(DeleteBehavior.Cascade); 
 
             modelBuilder.Entity<Boletim>().HasMany(x => x.NotasMaterias)
                                             .WithOne(x => x.Boletim)
