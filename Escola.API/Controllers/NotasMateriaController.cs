@@ -129,6 +129,24 @@ namespace Escola.API.Controllers
         {
             return _context.NotasMaterias.Any(e => e.Id == id);
         }
+
+        // DELETE: api/notasmateria/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteNotasMateria(int id)
+        {
+            var notasMateria = await _context.NotasMaterias.FindAsync(id);
+
+            if (notasMateria == null)
+            {
+                return NotFound();
+            }
+
+            _context.NotasMaterias.Remove(notasMateria);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
-}
+
+
