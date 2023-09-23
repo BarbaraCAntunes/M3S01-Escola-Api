@@ -85,5 +85,50 @@ namespace Escola.API.Controllers
 
             return CreatedAtAction(nameof(GetNotasMateria), new { id = notasMateria.Id }, notasMateria);
         }
+
+        // PUT: api/notasmateria/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutNotasMateria(int id, NotasMateriaDTO notasMateriaDTO)
+        {
+            if (id != notasMateriaDTO.Id)
+            {
+                return BadRequest("O ID no corpo da solicitação não coincide com o ID na URL."); // Retorna 400 Bad Request se o ID não coincidir
+            }
+
+            var notasMateria = await _context.NotasMaterias.FindAsync(id);
+
+            if (notasMateria == null)
+            {
+                return NotFound();
+            }
+
+            notasMateria.Nota = notasMateriaDTO.Nota;
+
+            _context.Entry(notasMateria).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!NotasMateriaExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        private bool NotasMateriaExists(int id)
+        {
+            return _context.NotasMaterias.Any(e => e.Id == id);
+        }
     }
+}
 }

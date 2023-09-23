@@ -4,6 +4,8 @@
     {
         public int BoletimId { get; set; }
         public int MateriaId { get; set; }
+
+        public int Id { get; set; }
         public decimal Nota { get; set; }
     }
 }
