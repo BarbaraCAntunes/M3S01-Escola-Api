@@ -1,4 +1,5 @@
 ﻿using Escola.API.DataBase;
+using Escola.API.DTO;
 using Escola.API.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -52,6 +53,37 @@ namespace Escola.API.Controllers
             }
 
             return notasMaterias;
+        }
+
+        // POST: api/notasmateria
+        [HttpPost]
+        public async Task<ActionResult<NotasMateria>> PostNotasMateria(NotasMateriaDTO notasMateriaDTO)
+        {
+            var boletim = await _context.Boletins.FindAsync(notasMateriaDTO.BoletimId);
+
+            if (boletim == null)
+            {
+                return BadRequest("O boletim associado não foi encontrado.");
+            }
+
+            var materia = await _context.Materias.FindAsync(notasMateriaDTO.MateriaId);
+
+            if (materia == null)
+            {
+                return BadRequest("A matéria associada não foi encontrada.");
+            }
+
+            var notasMateria = new NotasMateria
+            {
+                BoletimId = notasMateriaDTO.BoletimId,
+                MateriaId = notasMateriaDTO.MateriaId,
+                Nota = notasMateriaDTO.Nota,
+            };
+
+            _context.NotasMaterias.Add(notasMateria);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetNotasMateria), new { id = notasMateria.Id }, notasMateria);
         }
     }
 }
